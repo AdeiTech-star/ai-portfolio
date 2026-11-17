@@ -1,26 +1,188 @@
 @import "tailwindcss";
 
+/* Theme tokens - change these to restyle the whole site. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --bg: #f7f7f7;
+  --fg: #111111;
+  --muted: #6b7280;
+  --card: #ffffff;
+  --line: #e8e8e8;
+  --accent: #4b8a93; /* muted teal */
+  --accent-fg: #ffffff;
+  --ring: rgba(0, 0, 0, 0.05);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg: #0f1214;
+    --fg: #ececec;
+    --muted: #9aa3ab;
+    --card: #171b1e;
+    --line: #262c30;
+    --accent: #7fbcc4;
+    --accent-fg: #0f1214;
+    --ring: rgba(255, 255, 255, 0.05);
   }
 }
 
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-card: var(--card);
+  --color-line: var(--line);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --font-sans: var(--font-open-sans);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-open-sans), system-ui, sans-serif;
+}
+
+/* Faint concentric rings behind the hero */
+.rings,
+.rings::before,
+.rings::after {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  border-radius: 9999px;
+  border: 1px solid var(--ring);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.rings {
+  width: min(56rem, 140vw);
+  height: min(56rem, 140vw);
+  animation: pulse 6s ease-in-out infinite;
+}
+.rings::before {
+  content: "";
+  width: 62%;
+  height: 62%;
+}
+.rings::after {
+  content: "";
+  width: 140%;
+  height: 140%;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Blinking caret for the typewriter */
+.caret {
+  animation: caret 1s steps(1) infinite;
+}
+@keyframes caret {
+  50% { opacity: 0; }
+}
+
+/* Scroll-in animation (skipped for reduced-motion users) */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal-in {
+    opacity: 1;
+    transform: none;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rings, .caret { animation: none; }
+}
+
+/* Experience timeline: extra details slide open on hover/focus; always open on touch screens */
+.tl-more {
+  grid-template-rows: 0fr;
+}
+.group:hover .tl-more,
+.group:focus-visible .tl-more {
+  grid-template-rows: 1fr;
+}
+@media (hover: none) {
+  .tl-more {
+    grid-template-rows: 1fr;
+  }
+}
+
+/* Pulsing ring on the current role's dot */
+.tl-pulse {
+  box-shadow: 0 0 0 0 var(--accent);
+  animation: tl-pulse 2s ease-out infinite;
+}
+@keyframes tl-pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 60%, transparent); }
+  100% { box-shadow: 0 0 0 14px transparent; }
+}
+
+/* Experience details dialog */
+.tl-dialog::backdrop {
+  background: rgba(10, 14, 16, 0.45);
+  backdrop-filter: blur(3px);
+}
+.tl-dialog[open] {
+  animation: tl-pop 0.25s ease-out;
+}
+@keyframes tl-pop {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tl-pulse, .tl-dialog[open] { animation: none; }
+}
+
+/* Markdown inside assistant chat bubbles */
+.prose-chat p + p,
+.prose-chat ul,
+.prose-chat ol,
+.prose-chat ul + p,
+.prose-chat ol + p {
+  margin-top: 0.5rem;
+}
+.prose-chat ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.prose-chat ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.prose-chat a {
+  color: var(--accent);
+  text-decoration: underline;
+}
+.prose-chat strong {
+  font-weight: 600;
+}
+.prose-chat code {
+  font-size: 0.85em;
+  background: var(--line);
+  padding: 0.1rem 0.3rem;
+  border-radius: 0.25rem;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 9999px;
+  background: var(--muted);
+  animation: blink 1s infinite ease-in-out;
+}
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.25; }
+  40% { opacity: 1; }
 }

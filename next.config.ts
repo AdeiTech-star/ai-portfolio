@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // The chat route reads content/profile.md at runtime; make sure Vercel bundles it.
+  outputFileTracingIncludes: {
+    "/api/chat": ["./content/**/*"],
+  },
 };
 
 export default nextConfig;
